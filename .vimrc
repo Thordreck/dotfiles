@@ -3,6 +3,7 @@ syntax on
 set nowrap
 set encoding=utf8
 
+
 """" START Vundle Configuration 
 
 " Disable file type for vundle
@@ -14,6 +15,9 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+
+" Startup
+Plugin 'mhinz/vim-startify'
 
 " Utility
 Plugin 'scrooloose/nerdtree'
@@ -31,6 +35,7 @@ Plugin 'jeetsukumaran/vim-buffergator'
 Plugin 'gilsondev/searchtasks.vim'
 Plugin 'Shougo/neocomplete.vim'
 Plugin 'tpope/vim-dispatch'
+Plugin 'taketwo/vim-ros'
 
 " Generic Programming Support 
 Plugin 'jakedouglas/exuberant-ctags'
@@ -57,7 +62,6 @@ Plugin 'tpope/vim-fugitive'
 
 " Theme / Interface
 Plugin 'AnsiEsc.vim'
-Plugin 'ryanoasis/vim-devicons'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'sjl/badwolf'
@@ -76,6 +80,7 @@ Plugin 'effkay/argonaut.vim'
 Plugin 'ajh17/Spacegray.vim'
 Plugin 'atelierbram/Base2Tone-vim'
 Plugin 'colepeters/spacemacs-theme.vim'
+Plugin 'ryanoasis/vim-devicons'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -84,6 +89,8 @@ filetype plugin indent on    " required
 """""""""""""""""""""""""""""""""""""
 " Configuration Section
 """""""""""""""""""""""""""""""""""""
+
+set guifont=Monaco\ for\ Powerline\ Plus\ Nerd\ File\ Types\ 11
 
 " Show linenumbers
 set number
@@ -271,7 +278,7 @@ let g:fzf_history_dir = '~/.local/share/fzf-history'
 """""""""""""""""""""""""""""""""""""
 " Mappings configurationn
 """""""""""""""""""""""""""""""""""""
-map <C-n> :NERDTreeToggle<CR>
+map <C-h> :NERDTreeToggle<CR>
 map <C-m> :TagbarToggle<CR>
 
 " Omnicomplete Better Nav
@@ -320,6 +327,11 @@ nmap <silent> <leader>g :TestVisit<CR>
 autocmd FileType php inoremap <C-p> <ESC>:call pdv#DocumentWithSnip()<CR>i
 autocmd FileType php nnoremap <C-p> :call pdv#DocumentWithSnip()<CR>
 autocmd FileType php setlocal omnifunc=phpcd#CompletePHP
+
+" Enable NERDTree on startup
+" autocmd vimenter * NERDTree
+" autocmd vimenter * BuffergatorOpen
+" autocmd vimenter * TagbarToggle
 
 " Disable arrow movement, resize splits instead.
 if get(g:, 'elite_mode')

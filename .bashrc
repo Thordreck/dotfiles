@@ -116,3 +116,11 @@ if ! shopt -oq posix; then
   fi
 fi
 alias config='git --git-dir=/home/thordreck/.cfg --work-tree=/home/thordreck'
+
+EDITOR=vim
+
+# ROS config
+source /opt/ros/lunar/setup.bash
+export ROS_HOSTNAME=localhost
+export ROS_MASTER_URI=http://localhost:11311
+
