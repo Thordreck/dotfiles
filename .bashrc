@@ -124,3 +124,8 @@ source /opt/ros/lunar/setup.bash
 export ROS_HOSTNAME=localhost
 export ROS_MASTER_URI=http://localhost:11311
 
+
+# Start tmux by default
+if command -v tmux>/dev/null; then
+  [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux
+fi

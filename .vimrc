@@ -2,6 +2,12 @@ set nocompatible
 syntax on
 set nowrap
 set encoding=utf8
+set rnu
+
+let mapleader=","
+
+" Set path variable for commands like gf or :find
+"set path+=$ROS_ROOT /../../include'
 
 
 """" START Vundle Configuration 
@@ -16,9 +22,6 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
-" Startup
-Plugin 'mhinz/vim-startify'
-
 " Utility
 Plugin 'scrooloose/nerdtree'
 Plugin 'majutsushi/tagbar'
@@ -29,13 +32,12 @@ Plugin 'SirVer/ultisnips'
 Plugin 'junegunn/fzf.vim'
 Plugin 'junegunn/fzf'
 Plugin 'godlygeek/tabular'
-Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'benmills/vimux'
 Plugin 'jeetsukumaran/vim-buffergator'
 Plugin 'gilsondev/searchtasks.vim'
 Plugin 'Shougo/neocomplete.vim'
-Plugin 'tpope/vim-dispatch'
-Plugin 'taketwo/vim-ros'
+Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'easymotion/vim-easymotion'
 
 " Generic Programming Support 
 Plugin 'jakedouglas/exuberant-ctags'
@@ -43,16 +45,8 @@ Plugin 'honza/vim-snippets'
 Plugin 'Townk/vim-autoclose'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'tobyS/vmustache'
-Plugin 'janko-m/vim-test'
-Plugin 'maksimr/vim-jsbeautify'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'neomake/neomake'
-
-" Markdown / Writting
-Plugin 'reedes/vim-pencil'
-Plugin 'tpope/vim-markdown'
-Plugin 'jtratner/vim-flavored-markdown'
-Plugin 'LanguageTool'
 
 " Git Support
 Plugin 'kablamo/vim-git-log'
@@ -145,38 +139,21 @@ set statusline+=%*
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
-" let g:syntastic_check_on_wq = 0
-" let g:syntastic_enable_elixir_checker = 1
-" let g:syntastic_elixir_checkers = ["elixir"]
+let g:syntastic_check_on_wq = 0
+let g:syntastic_cpp_check_header = 1
+let g:syntastic_cpp_compiler_options = ' -std=c++14 '
+
+" Added ROS-specific header folder
+let g:syntastic_cpp_include_dirs = ['../../include', '../include', 'include', $ROS_ROOT . '/../../include']
 
 " Neomake settings
 autocmd! BufWritePost * Neomake
-
-" Vim-PDV Configuration 
-let g:pdv_template_dir = $HOME ."/.vim/bundle/pdv/templates_snip"
-
-" Markdown Syntax Support
-augroup markdown
-    au!
-    au BufNewFile,BufRead *.md,*.markdown setlocal filetype=ghmarkdown
-augroup END
 
 " Github Issues Configuration
 "let g:github_access_token = ""
 
 " Vim-Supertab Configuration
 let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-
-" Settings for Writting
-let g:pencil#wrapModeDefault = 'soft'   " default is 'hard'
-let g:languagetool_jar  = '/opt/languagetool/languagetool-commandline.jar'
-
-" Vim-pencil Configuration
-augroup pencil
-  autocmd!
-  autocmd FileType markdown,mkd call pencil#init()
-  autocmd FileType text         call pencil#init()
-augroup END
 
 " Vim-UtilSnips Configuration
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
@@ -213,13 +190,6 @@ function! s:my_cr_function()
   "return pumvisible() ? "\<C-y>" : "\<CR>"
 endfunction
 
-" Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
-
-" AutoComplPop like behavior.
-"let g:neocomplete#enable_auto_select = 1
-
-
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
@@ -231,13 +201,6 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 if !exists('g:neocomplete#sources#omni#input_patterns')
   let g:neocomplete#sources#omni#input_patterns = {}
 endif
-"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-
-" For perlomni.vim setting.
-" https://github.com/c9s/perlomni.vim
-let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
 
 " Fzf Configuration
 " This is the default extra key bindings
@@ -249,10 +212,6 @@ let g:fzf_action = {
 " Default fzf layout
 " - down / up / left / right
 let g:fzf_layout = { 'down': '~40%' }
-
-" In Neovim, you can set up fzf window using a Vim command
-let g:fzf_layout = { 'window': 'enew' }
-let g:fzf_layout = { 'window': '-tabnew' }
 
 " Customize fzf colors to match your color scheme
 let g:fzf_colors =
@@ -278,7 +237,7 @@ let g:fzf_history_dir = '~/.local/share/fzf-history'
 """""""""""""""""""""""""""""""""""""
 " Mappings configurationn
 """""""""""""""""""""""""""""""""""""
-map <C-h> :NERDTreeToggle<CR>
+map <C-o> :NERDTreeToggle<CR>
 map <C-m> :TagbarToggle<CR>
 
 " Omnicomplete Better Nav
@@ -316,22 +275,11 @@ imap <c-x><c-f> <plug>(fzf-complete-path)
 imap <c-x><c-j> <plug>(fzf-complete-file-ag)
 imap <c-x><c-l> <plug>(fzf-complete-line)
 
-" Vim-Test Mappings
-nmap <silent> <leader>t :TestNearest<CR>
-nmap <silent> <leader>T :TestFile<CR>
-nmap <silent> <leader>a :TestSuite<CR>
-nmap <silent> <leader>l :TestLast<CR>
-nmap <silent> <leader>g :TestVisit<CR>
-
-" Vim-PDV Mappings
-autocmd FileType php inoremap <C-p> <ESC>:call pdv#DocumentWithSnip()<CR>i
-autocmd FileType php nnoremap <C-p> :call pdv#DocumentWithSnip()<CR>
-autocmd FileType php setlocal omnifunc=phpcd#CompletePHP
-
-" Enable NERDTree on startup
-" autocmd vimenter * NERDTree
-" autocmd vimenter * BuffergatorOpen
-" autocmd vimenter * TagbarToggle
+" More natural split movement
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
 
 " Disable arrow movement, resize splits instead.
 if get(g:, 'elite_mode')
@@ -345,3 +293,12 @@ map <silent> <LocalLeader>ws :highlight clear ExtraWhitespace<CR>
 
 " Advanced customization using autoload functions
 inoremap <expr> <c-x><c-k> fzf#vim#complete#word({'left': '15%'})
+
+" Vertical vim split
+nnoremap <silent> vv <C-w>v
+
+" Prompt for a bash command prompt to run shortcut
+map <Leader>vp :VimuxPromptCommand<CR>
+
+" Run last command again
+map <Leader>vl :VimuxRunLastCommand<CR>
