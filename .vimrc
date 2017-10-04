@@ -302,3 +302,9 @@ map <Leader>vp :VimuxPromptCommand<CR>
 
 " Run last command again
 map <Leader>vl :VimuxRunLastCommand<CR>
+
+" Inspect vimux pane in copy mode
+map <Leader>vi :VimuxInspectRunner<CR>
+
+" Zoom vimux pane in copy mode
+map <Leader>vz :VimuxZoomRunner<CR>
